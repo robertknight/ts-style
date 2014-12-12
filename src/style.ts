@@ -195,3 +195,20 @@ export function compile<T>(tree: T) : string {
 	return [css].concat(classes).join('\n\n');
 }
 
+interface StyledElementProps {
+	className?: string;
+	style?: string;
+}
+
+/** mixin() is a utility function for use with React which takes the
+  * props object for a component and adds the necessary additional
+  * 'className' and/or 'style' props to apply styling from
+  * a style returned by create(). 'styles' can be a single
+  * style or an array of styles.
+  */
+export function mixin<P>(styles: any, props?: P) : P {
+	props = props || <P>{};
+	(<StyledElementProps>props).className = classes(styles);
+	return props;
+}
+
