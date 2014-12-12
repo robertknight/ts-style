@@ -1,4 +1,6 @@
 # ts-style
+[![Build Status](https://travis-ci.org/robertknight/ts-style.png?branch=master)](https://travis-ci.org/robertknight/ts-style)
+
 ts-style is a minimalist library for
 defining CSS styles using JavaScript or TypeScript,
 primarily intended for use with front-end libraries like React where components
