@@ -157,7 +157,7 @@ currently attempt to solve this problem.
 
 ## API
 
-### `create<T>(object: T) : T`
+`create<T>(object: T) : T`
 
 `create()` takes an object tree defining CSS classes and
 returns an augmented object with the same structure.
@@ -165,25 +165,25 @@ Properties (or nested properties) of the object can
 then be passed to `classes()` to get the corresponding
 class names.
 
-### `classes(...object: Object[]) : string`
+`classes(...object: Object[]) : string`
 
 `classes()` takes one or more objects from the result
 of `create()` and returns a space-separated list of
 class names that can be used as the value for the
 _class_ property of a DOM element.
 
-### `compile(styles: Object) : string`
+`compile(styles: Object) : string`
 
 `compile()` takes an object returned by `create()`
 and generates the corresponding CSS classes.
 
-### `registry: StyleRegistry`
+`registry: StyleRegistry`
 
 All of the styles that are created with `create()` are
 stored in a registry which is a map of top-level CSS
 class names to the object returned by `create()`.
 
-### `mixin<P>(styles: any, props?: P) : P`
+`mixin<P>(styles: any, props?: P) : P`
 
 mixin() is a utility function for use with React which takes the
 props object for a component and adds the necessary additional
