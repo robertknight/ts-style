@@ -74,3 +74,14 @@ describe('style.compile()', () => {
 	});
 });
 
+describe('style.mixin()', () => {
+	it('should add className property for single style', () => {
+		assert.deepEqual(style.mixin(styles.button, {label: 'Hello'}),
+		                 {className: 'button', label: 'Hello'});
+	});
+	it ('should add className property for style array', () => {
+		assert.deepEqual(style.mixin([styles.button, styles.buttonB], {label: 'Foo'}),
+		                 {className: 'button buttonB', label: 'Foo'});
+	});
+});
+

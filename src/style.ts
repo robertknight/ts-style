@@ -208,7 +208,11 @@ interface StyledElementProps {
   */
 export function mixin<P>(styles: any, props?: P) : P {
 	props = props || <P>{};
-	(<StyledElementProps>props).className = classes(styles);
+	if (Array.isArray(styles)) {
+		(<StyledElementProps>props).className = classes.apply(null, styles);
+	} else {
+		(<StyledElementProps>props).className = classes(styles);
+	}
 	return props;
 }
 
