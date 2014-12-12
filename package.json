@@ -2,16 +2,17 @@
   "name": "ts-style",
   "version": "0.1.0",
   "description": "Small library for defining CSS classes with JavaScript or TypeScript",
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/robertknight/ts-style"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/robertknight/ts-style"
   },
   "main": "dist/style.js",
-  "bin" : {
+  "bin": {
     "ts-style": "dist/cli.js"
   },
   "devDependencies": {
     "chai": "^1.10.0",
+    "dts-bundle": "^0.2.0",
     "mocha": "^2.0.1",
     "tsd": "^0.5.7",
     "tslint": "^1.0.1",
@@ -21,6 +22,9 @@
     "prepublish": "make all",
     "test": "make test"
   },
+  "files": [
+    "dist/*"
+  ],
   "author": "Robert Knight <robertknight@gmail.com>",
   "license": "BSD 3-Clause"
 }

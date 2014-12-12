@@ -2,7 +2,7 @@
 ts-style is a minimalist library for
 defining CSS styles using JavaScript or TypeScript,
 primarily intended for use with front-end libraries like React where components
-are defined in JavaScript, it has no dependencies on a specific
+are defined in JavaScript. It has no dependencies on a specific
 UI library.
 
 For background on why you might want to do such a thing, see
@@ -26,9 +26,11 @@ and allows use of tooling (eg. Visual Studio) for
 navigating the code.
 
 ### Goals
+ * Enable use of JavaScript/TypeScript language features
+   and tooling for defining component styles
  * Generate simple, readable CSS that is easy to work with in browser dev tools.
- * Enable use with TypeScript for compile-time checking of style references and
-   use of IDE code search and refactoring tools.
+ * No dependencies on a specific UI library, although ts-style is built
+   with React in mind
 
 ### Basic Usage
 Styles are created by passing an object defining class names
@@ -67,7 +69,18 @@ in a React component:
 ````
 var Button = React.createClass({
   render: function() {
-    return React.DOM.div({className: style.classes(theme.button),
+    return React.DOM.div({className: style.classes(theme.button)},
+      this.props.label);
+  }
+});
+````
+
+Or for a more succinct way of applying styling, use `style.mixin()`:
+
+````
+var Button = React.createClass({
+  render: function() {
+    return React.DOM.div(style.mixin(theme.button),
       this.props.label);
   }
 });
@@ -132,8 +145,13 @@ Generates:
 }
 ````
 
+### Specificity and Style Resolution
+
 The order of classes in the generated CSS will match the
 order of properties passed to `style.create()`.
+Hence if multiple styles are applied to a component,
+the last one defined takes precedence. ts-style does not
+currently attempt to solve this problem.
 
 ## API
 
@@ -162,6 +180,14 @@ and generates the corresponding CSS classes.
 All of the styles that are created with `create()` are
 stored in a registry which is a map of top-level CSS
 class names to the object returned by `create()`.
+
+### `mixin<P>(styles: any, props?: P) : P`
+
+mixin() is a utility function for use with React which takes the
+props object for a component and adds the necessary additional
+'className' and/or 'style' props to apply styling from
+a style returned by create(). 'styles' can be a single
+style or an array of styles.
 
 ## ts-style
 
