@@ -5,7 +5,10 @@ compiled_srcs=$(subst src, build, $(patsubst %.ts,%.js,$(all_srcs)))
 
 all: dist/cli.js dist/style.js dist/ts-style.d.ts
 
-$(compiled_srcs): $(all_srcs)
+typings: tsd.json
+	./node_modules/.bin/tsd reinstall
+
+$(compiled_srcs): $(all_srcs) typings
 	./node_modules/.bin/tsc $(TSC_OPTS) $(all_srcs) --outDir build --declaration
 	mkdir -p dist
 
@@ -27,4 +30,4 @@ lint: $(all_srcs)
 	./node_modules/.bin/tslint $(addprefix  -f , $?)
 
 clean:
-	rm -rf build dist
+	rm -rf build dist typings
