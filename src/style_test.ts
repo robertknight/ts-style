@@ -73,6 +73,18 @@ describe('style.compile()', () => {
 		assert.equal(stripSpaces(style.compile(styles.buttonB)),
 		             stripSpaces('.buttonB::pseudo-selector { color: green; }'));
 	});
+
+	it('should suffix numeric values with px', () => {
+		var widgetStyle = style.create({widget: {top: 5}});
+		assert.equal(stripSpaces(style.compile(widgetStyle)),
+		             stripSpaces('.widget { top: 5px; }'));
+	});
+
+	it('should not suffix non-length properties with px', () => {
+		var widgetStyle = style.create({widget: {opacity: 0.2}});
+		assert.equal(stripSpaces(style.compile(widgetStyle)),
+		             stripSpaces('.widget { opacity: 0.2; }'));
+	});
 });
 
 describe('style.mixin()', () => {
@@ -80,9 +92,30 @@ describe('style.mixin()', () => {
 		assert.deepEqual(style.mixin(styles.button, {label: 'Hello'}),
 		                 {className: 'button', label: 'Hello'});
 	});
-	it ('should add className property for style array', () => {
+
+	it('should add className property for style array', () => {
 		assert.deepEqual(style.mixin([styles.button, styles.buttonB], {label: 'Foo'}),
 		                 {className: 'button buttonB', label: 'Foo'});
+	});
+
+	it('should use inline styles to resolve conflicts', () => {
+		var styles = style.create({
+			styleA: {
+				color: 'green',
+				fontWeight: 'bold'
+			},
+			styleB: {
+				color: 'blue',
+				fontSize: 15
+			}
+		});
+		assert.deepEqual(style.mixin([styles.styleB, styles.styleA]),
+		                 {className: 'styleB styleA', style: {color: 'green'}});
+	});
+
+	it('should use inline styles for plain objects', () => {
+		assert.deepEqual(style.mixin({opacity: 0}),
+		                 {style: {opacity: 0}});
 	});
 });
 

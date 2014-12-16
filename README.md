@@ -147,13 +147,15 @@ Generates:
 }
 ````
 
-### Specificity and Style Resolution
+### Style Precedence
 
 The order of classes in the generated CSS will match the
 order of properties passed to `style.create()`.
-Hence if multiple styles are applied to a component,
-the last one defined takes precedence. ts-style does not
-currently attempt to solve this problem.
+
+The `style.mixin()` function takes an array of styles which is ordered
+from lowest to highest precedence. Where there are conflicting property
+values, inline styling is used to ensure the appropriate styling is applied
+to the component.
 
 ## API
 
@@ -190,6 +192,28 @@ props object for a component and adds the necessary additional
 'className' and/or 'style' props to apply styling from
 a style returned by create(). 'styles' can be a single
 style or an array of styles.
+
+The 'styles' array is ordered from lowest to highest precedence.
+Where a property in a higher-precedence style conflicts with
+a property in a lower-precedence style, the resulting object
+will use inline styles to ensure that the component is styled
+correctly.
+
+For example:
+
+````
+var styles = style.create({
+	styleA: { color: 'green' },
+	styleB: { color: 'blue' }
+});
+styles.mixin([styleB, styleA]);
+````
+
+Will generate:
+
+````
+{ className: 'styleB styleA', style: { color: 'green' } }
+````
 
 ## ts-style
 

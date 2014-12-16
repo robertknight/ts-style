@@ -17,6 +17,24 @@
    and work with in browser development tools.
 */
 
+// see http://facebook.github.io/react/tips/style-props-value-px.html
+var NON_PX_PROPERTIES = [
+  'columnCount',
+  'fillOpacity',
+  'flex',
+  'flexGrow',
+  'flexShrink',
+  'fontWeight',
+  'lineClamp',
+  'lineHeight',
+  'opacity',
+  'order',
+  'orphans',
+  'widows',
+  'zIndex',
+  'zoom'
+];
+
 export interface Style {
 	/** A key for the style, used to generate CSS class names. */
 	key?: string;
@@ -150,8 +168,8 @@ function cssPropName(name: string) {
 	return name.replace(uppercasePattern, '-$1').toLowerCase();
 }
 
-function cssPropValue(value: any) {
-	if (typeof value == 'number') {
+function cssPropValue(propName: string, value: any) {
+	if (typeof value == 'number' && NON_PX_PROPERTIES.indexOf(propName) === -1) {
 		return value + 'px';
 	} else {
 		return value.toString();
@@ -183,7 +201,7 @@ export function compile<T>(tree: T) : string {
 		if (typeof prop == 'object') {
 			classes.push(compile(prop));
 		} else {
-			cssProps.push(cssPropName(k) + ': ' + cssPropValue(prop));
+			cssProps.push(cssPropName(k) + ': ' + cssPropValue(k, prop));
 		}
 	});
 
@@ -197,7 +215,50 @@ export function compile<T>(tree: T) : string {
 
 interface StyledElementProps {
 	className?: string;
-	style?: string;
+	style?: {[index:string] : any};
+}
+
+/** Returns true if @p obj is a style tree returned by style.create()
+  * or an element of one.
+  */
+export function isStyle(obj: Object) {
+	return 'key' in obj;
+}
+
+function combine(styles: any[]) : StyledElementProps {
+	var inlineStyles: {[index:string] : string};
+
+	// where CSS classes have conflicting properties,
+	// use inline styles
+	var usedProps: {[index:string] : boolean} = {};
+	styles.forEach((style) => {
+		if (!style) {
+			return;
+		}
+
+		var isInline = !('key' in style);
+		for (var prop in style) {
+			var value = style[prop];
+
+			// ignore properties added by style.create()
+			// and nested styles
+			if (prop === 'key' || prop === 'parent' ||
+				(typeof value !== 'number' && typeof value !== 'string')) {
+				continue;
+			}
+
+			if (usedProps[prop] || isInline) {
+				inlineStyles = inlineStyles || {};
+				inlineStyles[prop] = style[prop];
+			}
+			usedProps[prop] = true;
+		}
+	});
+
+	return {
+		style: inlineStyles,
+		className: classes.apply(null, styles)
+	};
 }
 
 /** mixin() is a utility function for use with React which takes the
@@ -209,9 +270,19 @@ interface StyledElementProps {
 export function mixin<P>(styles: any, props?: P) : P {
 	props = props || <P>{};
 	if (Array.isArray(styles)) {
-		(<StyledElementProps>props).className = classes.apply(null, styles);
+		var styleProps = combine(styles);
+		if (styleProps.className) {
+			(<StyledElementProps>props).className = styleProps.className;
+		}
+		if (styleProps.style) {
+			(<StyledElementProps>props).style = styleProps.style;
+		}
 	} else {
-		(<StyledElementProps>props).className = classes(styles);
+		if (styles.key) {
+			(<StyledElementProps>props).className = classes(styles);
+		} else {
+			(<StyledElementProps>props).style = styles;
+		}
 	}
 	return props;
 }
