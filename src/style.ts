@@ -282,7 +282,7 @@ export function mixin<P>(styles: any, props?: P) : P {
 		if (styleProps.style) {
 			(<StyleProps>props).style = styleProps.style;
 		}
-	} else {
+	} else if (styles) {
 		if (styles.key) {
 			(<StyleProps>props).className = classes(styles);
 		} else {

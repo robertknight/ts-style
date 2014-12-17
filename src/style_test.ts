@@ -117,6 +117,10 @@ describe('style.mixin()', () => {
 		assert.deepEqual(style.mixin({opacity: 0}),
 		                 {style: {opacity: 0}});
 	});
+
+	it('should allow null style', () => {
+		assert.deepEqual(style.mixin(null), {});
+	});
 });
 
 describe('style.merge()', () => {
