@@ -199,6 +199,14 @@ a property in a lower-precedence style, the resulting object
 will use inline styles to ensure that the component is styled
 correctly.
 
+`merge(...styles: any[])`
+
+merge() is a utility function which takes one or more objects
+from a style create created using `style.create()` and returns
+an object which merges the style properties of all of the
+input styles. This can be used to create styles which combine
+the properties from other styles.
+
 For example:
 
 ````

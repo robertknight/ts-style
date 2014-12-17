@@ -119,3 +119,19 @@ describe('style.mixin()', () => {
 	});
 });
 
+describe('style.merge()', () => {
+	it('should merge style objects in order', () => {
+		var mixins = style.create({
+			mixinA: { fontWeight: 'bold', fontSize: 12 },
+			mixinB: { fontSize: 14 }
+		});
+		var styles = style.create({
+			merged: style.merge(mixins.mixinA, mixins.mixinB, {
+				color: 'green'
+			})
+		});
+		var css = style.compile(styles);
+		assert.equal(stripSpaces(css),
+		             stripSpaces('.merged { font-weight: bold; font-size: 14px; color: green; }'));
+	});
+});

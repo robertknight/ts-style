@@ -17,6 +17,8 @@
    and work with in browser development tools.
 */
 
+import assign = require('./assign');
+
 // see http://facebook.github.io/react/tips/style-props-value-px.html
 var NON_PX_PROPERTIES = [
   'columnCount',
@@ -213,9 +215,12 @@ export function compile<T>(tree: T) : string {
 	return [css].concat(classes).join('\n\n');
 }
 
-interface StyledElementProps {
+interface StyleProps {
+	// space-separated list of CSS class names
 	className?: string;
-	style?: {[index:string] : any};
+
+	// map of camelCased style property -> number | string
+	style?: {[index:string] : any /* number | string */};
 }
 
 /** Returns true if @p obj is a style tree returned by style.create()
@@ -225,7 +230,7 @@ export function isStyle(obj: Object) {
 	return 'key' in obj;
 }
 
-function combine(styles: any[]) : StyledElementProps {
+function combine(styles: any[]) : StyleProps {
 	var inlineStyles: {[index:string] : string};
 
 	// where CSS classes have conflicting properties,
@@ -272,18 +277,33 @@ export function mixin<P>(styles: any, props?: P) : P {
 	if (Array.isArray(styles)) {
 		var styleProps = combine(styles);
 		if (styleProps.className) {
-			(<StyledElementProps>props).className = styleProps.className;
+			(<StyleProps>props).className = styleProps.className;
 		}
 		if (styleProps.style) {
-			(<StyledElementProps>props).style = styleProps.style;
+			(<StyleProps>props).style = styleProps.style;
 		}
 	} else {
 		if (styles.key) {
-			(<StyledElementProps>props).className = classes(styles);
+			(<StyleProps>props).className = classes(styles);
 		} else {
-			(<StyledElementProps>props).style = styles;
+			(<StyleProps>props).style = styles;
 		}
 	}
 	return props;
+}
+
+/** Merges a set of inline style objects together into
+  * a single style.
+  *
+  * This can be used to create mixins.
+  */
+export function merge(...styles: Style[]) : Object {
+	var merged: Style = {};
+	styles.forEach((style) => {
+		assign(merged, style);
+	});
+	delete merged.key;
+	delete merged.parent;
+	return merged;
 }
 
