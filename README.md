@@ -77,7 +77,8 @@ var Button = React.createClass({
 });
 ````
 
-Or for a more succinct way of applying styling, use `style.mixin()`:
+If you are using React, the __recommended approach__ is the more succinct `style.mixin()` which takes a style object or array of style objects as the first argument and the props for a component as the second argument and produces
+a props object with appropriate `className` and `style` properties.
 
 ````
 var Button = React.createClass({
