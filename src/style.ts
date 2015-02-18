@@ -44,6 +44,11 @@ export interface Style {
 	  * nested styles.
 	  */
 	parent?: Style;
+	/** Mixins used by this style */
+	mixins?: Style[];
+
+	/** CSS property or nested style */
+	[index: string]: string | number | Style | Style[];
 }
 
 /** A style registry holds a collection of named
@@ -73,6 +78,10 @@ class StyleRegistryImpl implements StyleRegistry {
 /** A global registry of all styles defined via style.create()
   */
 export var registry: StyleRegistry = new StyleRegistryImpl();
+
+function isSpecialProp(key: string) {
+	return key === 'key' || key === 'parent' || key === 'mixins';
+}
 
 function addKeys(tree: any) {
 	Object.keys(tree).forEach((k) => {
@@ -155,7 +164,7 @@ export function classes<T>(...objects: T[]) : string {
 		if (!object) {
 			return;
 		}
-		var compiled = <Style>object;
+		var compiled = <Style><any>object;
 		if (classNames.length > 0) {
 			classNames += ' ';
 		}
@@ -195,7 +204,7 @@ export function compile<T>(tree: T) : string {
 	var classes: string[] = [];
 	var cssProps: string[] = [];
 	Object.keys(tree).forEach((k) => {
-		if (k === 'key' || k === 'parent') {
+		if (isSpecialProp(k)) {
 			return;
 		}
 
@@ -207,7 +216,7 @@ export function compile<T>(tree: T) : string {
 		}
 	});
 
-	var style: Style = tree;
+	var style: Style = <any>tree;
 	var css = '';
 	if (style.key && cssProps.length > 0) {
 		css = cssClass(className(style), cssProps);
@@ -230,8 +239,32 @@ export function isStyle(obj: Object) {
 	return 'key' in obj;
 }
 
-function combine(styles: any[]) : StyleProps {
-	var inlineStyles: {[index:string] : string};
+function flattenMixins(styles: Object | Object[]): Object | Object[] {
+	if (styles instanceof Array) {
+		var styleList: any[] = [];
+		styles.forEach((style: Style) => {
+			if (style.mixins) {
+				style.mixins.forEach((style) => {
+					styleList.push(style);
+				});
+			}
+			styleList.push(style);
+		});
+		return styleList;
+	} else if (styles instanceof Object) {
+		var style = <Style>styles;
+		if (style.mixins) {
+			return flattenMixins([styles]);
+		} else {
+			return styles;
+		}
+	} else {
+		return null;
+	}
+}
+
+function combine(styles: Style[]) : StyleProps {
+	var inlineStyles: {[index:string] : string | number};
 
 	// where CSS classes have conflicting properties,
 	// use inline styles
@@ -243,20 +276,20 @@ function combine(styles: any[]) : StyleProps {
 
 		var isInline = !('key' in style);
 		for (var prop in style) {
-			var value = style[prop];
-
 			// ignore properties added by style.create()
 			// and nested styles
-			if (prop === 'key' || prop === 'parent' ||
-				(typeof value !== 'number' && typeof value !== 'string')) {
+			if (isSpecialProp(prop)) {
 				continue;
 			}
 
-			if (usedProps[prop] || isInline) {
-				inlineStyles = inlineStyles || {};
-				inlineStyles[prop] = style[prop];
+			var value = style[prop];
+			if (typeof value === 'number' || typeof value === 'string') {
+				if (usedProps[prop] || isInline) {
+					inlineStyles = inlineStyles || {};
+					inlineStyles[prop] = value;
+				}
+				usedProps[prop] = true;
 			}
-			usedProps[prop] = true;
 		}
 	});
 
@@ -272,9 +305,11 @@ function combine(styles: any[]) : StyleProps {
   * a style returned by create(). 'styles' can be a single
   * style or an array of styles.
   */
-export function mixin<P>(styles: any, props?: P) : P {
+export function mixin<P>(styles: Object | Object[], props?: P) : P {
 	props = props || <P>{};
-	if (Array.isArray(styles)) {
+	styles = flattenMixins(styles);
+
+	if (styles instanceof Array) {
 		var styleProps = combine(styles);
 		if (styleProps.className) {
 			(<StyleProps>props).className = styleProps.className;
@@ -282,11 +317,12 @@ export function mixin<P>(styles: any, props?: P) : P {
 		if (styleProps.style) {
 			(<StyleProps>props).style = styleProps.style;
 		}
-	} else if (styles) {
-		if (styles.key) {
-			(<StyleProps>props).className = classes(styles);
+	} else if (styles instanceof Object) {
+		var style = <Style>styles;
+		if (style.key) {
+			(<StyleProps>props).className = classes(style);
 		} else {
-			(<StyleProps>props).style = styles;
+			(<StyleProps>props).style = style;
 		}
 	}
 	return props;
@@ -297,7 +333,7 @@ export function mixin<P>(styles: any, props?: P) : P {
   *
   * This can be used to create mixins.
   */
-export function merge(...styles: Style[]) : Object {
+export function merge(...styles: any[]) : Object {
 	var merged: Style = {};
 	styles.forEach((style) => {
 		assign(merged, style);

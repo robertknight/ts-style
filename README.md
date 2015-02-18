@@ -14,7 +14,7 @@ or [this post on AbsurdJS](http://davidwalsh.name/write-css-javascript).
 See also [React Style](https://github.com/js-next/react-style) for a library
 specifically for defining styles for React components in JavaScript.
 
-### Rationale
+## Rationale
 
 Using JavaScript to generate CSS styles allows re-use
 of existing language facilities and tools for defining constants, mixins,
@@ -27,14 +27,14 @@ compile-time checking that style references are valid
 and allows use of tooling (eg. Visual Studio) for
 navigating the code.
 
-### Goals
+## Goals
  * Enable use of JavaScript/TypeScript language features
    and tooling for defining component styles
  * Generate simple, readable CSS that is easy to work with in browser dev tools.
  * No dependencies on a specific UI library, although ts-style is built
    with React in mind
 
-### Basic Usage
+## Basic Usage
 Styles are created by passing an object defining class names
 and their properties to `style.create()`. Style property names
 are written in camelCase and converted to hyphenated-names
@@ -52,7 +52,7 @@ var theme = style.create({
   }
 });
 ````
-`ts-style theme.js` OR `style.compile(theme)` then generates this CSS:
+The CSS can then be generated using the __ts-style__ command-line tool or the API.  `ts-style theme.js` OR `style.compile(theme)` will generate this CSS:
 ````
 button {
   background-color: green;
@@ -63,22 +63,18 @@ button {
 
 In the JS logic or templates that define the components
 using the styles, rather than using string literals for
-class names, use `style.classes()` to get the names
-of the generated classes. For example,
-in a React component:
+class names, use `style.mixin()` to get the list of CSS class names
+and inline styles to apply to the UI element.
 
+`style.mixin(theme.button)` will return:
 
 ````
-var Button = React.createClass({
-  render: function() {
-    return React.DOM.div({className: style.classes(theme.button)},
-      this.props.label);
-  }
-});
+{
+  className: 'button'
+}
 ````
 
-If you are using React, the __recommended approach__ is the more succinct `style.mixin()` which takes a style object or array of style objects as the first argument and the props for a component as the second argument and produces
-a props object with appropriate `className` and `style` properties.
+This can be used in a React component for example:
 
 ````
 var Button = React.createClass({
@@ -88,6 +84,9 @@ var Button = React.createClass({
   }
 });
 ````
+
+## Additional Features
+
 
 ### Namespaces
 
@@ -148,7 +147,33 @@ Generates:
 }
 ````
 
-### Style Precedence
+### Mixins
+
+Style definitions can specify mixins. This is a list of styles
+which will be used whenever the containing style is used.
+
+For example:
+````
+var mixins = style.create({
+  disableSelection: {
+    userSelect: 'none'
+  }
+});
+
+var theme = style.create({
+  button: {
+    mixins: [mixins.disableSelection],
+    font-weight: 'bold'
+  }
+});
+````
+`style.mixin(theme.button)` generates:
+````
+{
+   className: 'disableSelection button'
+}
+````
+## Style Precedence
 
 The order of classes in the generated CSS will match the
 order of properties passed to `style.create()`.
@@ -158,9 +183,9 @@ from lowest to highest precedence. Where there are conflicting property
 values, inline styling is used to ensure the appropriate styling is applied
 to the component.
 
-## API
+## Core API
 
-`create<T>(object: T) : T`
+`create<T>(object: T): Style`
 
 `create()` takes an object tree defining CSS classes and
 returns an augmented object with the same structure.
@@ -168,45 +193,30 @@ Properties (or nested properties) of the object can
 then be passed to `classes()` to get the corresponding
 class names.
 
-`classes(...object: Object[]) : string`
-
-`classes()` takes one or more objects from the result
-of `create()` and returns a space-separated list of
-class names that can be used as the value for the
-_class_ property of a DOM element.
-
-`compile(styles: Object) : string`
+`compile(styles: Style): string`
 
 `compile()` takes an object returned by `create()`
 and generates the corresponding CSS classes.
 
-`registry: StyleRegistry`
 
-All of the styles that are created with `create()` are
-stored in a registry which is a map of top-level CSS
-class names to the object returned by `create()`.
+`mixin<P>(styles: Style | Style[], props?: P): P`
 
-`mixin<P>(styles: any, props?: P) : P`
+mixin() takes a list of styles from an object created by
+`style.create()` and returns an object with `className` and `style`
+properties that should be used as the 'class' and 'style'
+attributes for the DOM element respectively.
 
-mixin() is a utility function for use with React which takes the
-props object for a component and adds the necessary additional
-'className' and/or 'style' props to apply styling from
-a style returned by create(). 'styles' can be a single
-style or an array of styles.
+If `props` is specified, the properties from it are added to the returned
+object. If you are using React, this allows you to pass the result of mixin()
+as the props argument to a component's constructor.
 
 The 'styles' array is ordered from lowest to highest precedence.
 Where a property in a higher-precedence style conflicts with
 a property in a lower-precedence style, the resulting object
-will use inline styles to ensure that the component is styled
-correctly.
-
-`merge(...styles: any[])`
-
-merge() is a utility function which takes one or more objects
-from a style create created using `style.create()` and returns
-an object which merges the style properties of all of the
-input styles. This can be used to create styles which combine
-the properties from other styles.
+will include a `style` property that contains the
+attributes and final values for that property. When
+the result of `style.mixin()` is passed to a React component
+this results in inline styling on the DOM element.
 
 For example:
 
@@ -224,7 +234,19 @@ Will generate:
 { className: 'styleB styleA', style: { color: 'green' } }
 ````
 
-## ts-style
+## Utility APIs
+
+`merge(...styles: any[])`
+
+merge() is a utility function which takes one or more objects
+from a style create created using `style.create()` and returns
+an object which merges the style properties of all of the
+input styles. This can be used to create styles which combine
+the properties from other styles.
+
+## Command Line Tools
+
+### ts-style
 
 `ts-style` is a command-line utility which takes as
 input a list of JavaScript files containing

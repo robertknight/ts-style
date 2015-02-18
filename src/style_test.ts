@@ -139,3 +139,44 @@ describe('style.merge()', () => {
 		             stripSpaces('.merged { font-weight: bold; font-size: 14px; color: green; }'));
 	});
 });
+
+describe('Style.mixins', () => {
+	it('should add classes for mixins ', () => {
+		var mixins = style.create({
+			mixinA: { fontWeight: 'bold' }
+		});
+		var styles = style.create({
+			merged: {
+				mixins: [mixins.mixinA],
+				color: 'green'
+			}
+		});
+		var css = style.compile(styles);
+		assert.equal(stripSpaces(css),
+		             stripSpaces('.merged { color: green; }'));
+
+		assert.deepEqual(style.mixin(styles.merged), {
+			className: 'mixinA merged'
+		});
+	});
+
+	it('should use inline styles to resolve conflicts', () => {
+		var mixins = style.create({
+			mixinA: { fontSize: 12, fontWeight: 'bold', backgroundColor: 'red' },
+			mixinB: { fontSize: 13, color: 'green' }
+		});
+		var styles = style.create({
+			merged: {
+				mixins: [mixins.mixinA, mixins.mixinB],
+				fontWeight: 'normal'
+			}
+		});
+		assert.deepEqual(style.mixin(styles.merged), {
+			className: 'mixinA mixinB merged',
+			style: {
+				fontSize: 13,
+				fontWeight: 'normal'
+			}
+		});
+	});
+});
