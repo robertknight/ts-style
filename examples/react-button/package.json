@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "description": "Example of using ts-style with React",
   "main": "index.js",
-  "dependencies" : {
-    "ts-style" : "../../"
+  "dependencies": {
+    "ts-style": "../../",
+    "typescript": "^1.4.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

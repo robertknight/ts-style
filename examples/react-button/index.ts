@@ -14,6 +14,18 @@ import style = require('ts-style');
 // as the input to style.create() but is augmented
 // with data needed by other style functions
 // (compile(), create(), mixin())
+
+// The styles here are divided into two parts, 'mixins'
+// which are shared pieces of styling used by different
+// elements and 'theme', which are the styles for
+// our component elements.
+var mixins = style.create({
+	clickable: {
+		userSelect: 'none',
+		cursor: 'pointer'
+	}
+});
+
 var theme = style.create({
 	// styling for our top-level view.
 	// Elements that start with a lower-case
@@ -35,6 +47,8 @@ var theme = style.create({
 	},
 
 	button: {
+		mixins: [mixins.clickable],
+
 		backgroundColor: 'red',
 		border: '1px solid red',
 		borderRadius: 3,
