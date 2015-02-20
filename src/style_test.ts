@@ -121,6 +121,15 @@ describe('style.mixin()', () => {
 	it('should allow null style', () => {
 		assert.deepEqual(style.mixin(null), {});
 	});
+
+	it('should allow null style in array', () => {
+		var styles = style.create({
+			styleA: {},
+			styleB: {}
+		});
+		assert.deepEqual(style.mixin([styles.styleA, null, styles.styleB]),
+		                 {className: 'styleA styleB'});
+	});
 });
 
 describe('style.merge()', () => {

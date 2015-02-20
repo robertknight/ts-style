@@ -1,7 +1,7 @@
 {
   "name": "ts-style",
-  "version": "0.4.0",
-  "description": "Small library for defining CSS classes with JavaScript or TypeScript",
+  "version": "0.4.1",
+  "description": "Library for defining CSS classes with JavaScript or TypeScript",
   "repository": {
     "type": "git",
     "url": "https://github.com/robertknight/ts-style"

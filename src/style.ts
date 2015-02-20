@@ -243,6 +243,9 @@ function flattenMixins(styles: Object | Object[]): Object | Object[] {
 	if (styles instanceof Array) {
 		var styleList: any[] = [];
 		styles.forEach((style: Style) => {
+			if (!style) {
+				return;
+			}
 			if (style.mixins) {
 				style.mixins.forEach((style) => {
 					styleList.push(style);
