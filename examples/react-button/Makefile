@@ -12,19 +12,23 @@ all: typings build/bundle.js build/theme.css
 # you may want to split component styling
 # into a separate bundle.
 build/theme.css: build/bundle.js
-	$(NODE_BIN)/ts-style build/index.js > $@
+	@echo "Generating CSS"
+	@$(NODE_BIN)/ts-style build/index.js > $@
 
 build/bundle.js: $(wildcard *.ts) node_modules
-	$(TSC) $< --outDir build
-	$(NODE_BIN)/browserify build/index.js > $@
+	@echo "Generating Browserify bundle"
+	@$(TSC) $< --outDir build
+	@$(NODE_BIN)/browserify build/index.js > $@
 
 node_modules: package.json
-	npm install .
-	touch node_modules
+	@echo "Updating npm dependencies"
+	@npm install .
+	@touch node_modules
 
 typings: tsd.json node_modules
-	$(TSD) reinstall
-	touch typings
+	@echo "Fetching type definitions"
+	@$(TSD) reinstall
+	@touch typings
 
 clean:
 	rm -rf build typings node_modules
