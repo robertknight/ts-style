@@ -1,9 +1,7 @@
-/// <reference path="node_modules/typed-react/typings/react/react.d.ts" />
-/// <reference path="node_modules/typed-react/dist/typed-react.d.ts" />
+/// <reference path="typings/react/future/react-0.13.0.d.ts" />
 /// <reference path="node_modules/ts-style/dist/ts-style.d.ts" />
 
 import react = require('react');
-import typed_react = require('typed-react');
 
 import style = require('ts-style');
 
@@ -71,7 +69,7 @@ interface ButtonProps {
 	label: string;
 }
 
-class Button extends typed_react.Component<ButtonProps, {}> {
+class Button extends react.Component<ButtonProps, {}> {
 	render() {
 		// use style.mixin() to merge the component's props
 		// with the props ('className', 'style') needed
@@ -82,9 +80,9 @@ class Button extends typed_react.Component<ButtonProps, {}> {
 		}));
 	}
 }
-var ButtonF = react.createFactory(typed_react.createClass(Button));
+var ButtonF = react.createFactory(Button);
 
-class App extends typed_react.Component<{},{}> {
+class App extends react.Component<{},{}> {
 	render() {
 		return react.DOM.div(style.mixin(theme.app),
 		  ButtonF({label: 'Button One'}),
@@ -92,7 +90,7 @@ class App extends typed_react.Component<{},{}> {
 		);
 	}
 }
-var AppF = react.createFactory(typed_react.createClass(App));
+var AppF = react.createFactory(App);
 
 // check that we are running in a browser before trying
 // to render the component - this module is require'd by

@@ -1,0 +1,21 @@
+{
+  "version": "v4",
+  "repo": "borisyankov/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "typings/tsd.d.ts",
+  "installed": {
+    "react/future/react-addons-0.13.0.d.ts": {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "react/future/react-addons-global-0.13.0.d.ts": {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "react/future/react-global-0.13.0.d.ts": {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "react/future/react-0.13.0.d.ts": {
+      "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    }
+  }
+}

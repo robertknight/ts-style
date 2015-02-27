@@ -4,6 +4,7 @@
   "description": "Example of using ts-style with React",
   "main": "index.js",
   "dependencies": {
+    "react": "^0.13.0-rc1",
     "ts-style": "../../",
     "typescript": "^1.4.1"
   },
@@ -11,5 +12,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Robert Knight <robertknight@gmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "browserify": "^9.0.3",
+    "tsd": "^0.6.0-beta.5"
+  }
 }
