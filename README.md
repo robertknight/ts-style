@@ -43,7 +43,7 @@ are written in camelCase and converted to hyphenated-names
 
 theme.js:
 
-````
+```javascript
 var theme = style.create({
   button: {
     backgroundColor: 'green',
@@ -51,15 +51,17 @@ var theme = style.create({
     borderRadius: 3
   }
 });
-````
+```
+
 The CSS can then be generated using the __ts-style__ command-line tool or the API.  `ts-style theme.js` OR `style.compile(theme)` will generate this CSS:
-````
+
+```css
 button {
   background-color: green;
   width: 100px;
   border-radius: 3px;
 }
-````
+```
 
 In the JS logic or templates that define the components
 using the styles, rather than using string literals for
@@ -68,22 +70,22 @@ and inline styles to apply to the UI element.
 
 `style.mixin(theme.button)` will return:
 
-````
+```javascript
 {
   className: 'button'
 }
-````
+```
 
 This can be used in a React component for example:
 
-````
+```javascript
 var Button = React.createClass({
   render: function() {
     return React.DOM.div(style.mixin(theme.button),
       this.props.label);
   }
 });
-````
+```
 
 ## Additional Features
 
@@ -93,7 +95,7 @@ var Button = React.createClass({
 The tree passed to `style.create()` can contain nested objects and parent
 property names are used in the generated class names:
 
-````
+```javascript
 var theme = style.create({
   button: {
     backgroundColor: 'red',
@@ -102,11 +104,11 @@ var theme = style.create({
     }
   }
 });
-````
+```
 
 Generates:
 
-````
+```css
 .button {
   background-color: red;
 }
@@ -114,7 +116,7 @@ Generates:
 .button-disabled {
   background-color: white;
 }
-````
+```
 
 ### Descendant and Pseudo-Selectors
 
@@ -123,7 +125,7 @@ CSS class selectors. Other property names are simply appended
 to the selector for the containing object. This allows
 pseudo and descendant selectors to be defined:
 
-````
+```javascript
 var theme = style.create({
     widget: {
       ' a' : {
@@ -134,18 +136,18 @@ var theme = style.create({
       }
     }
 })
-````
+```
 
 Generates:
 
-````
+```css
 .widget a {
   text-decoration: none;
 }
 .widget::active {
   font-weight: bold;
 }
-````
+```
 
 ### Mixins
 
@@ -153,7 +155,8 @@ Style definitions can specify mixins. This is a list of styles
 which will be used whenever the containing style is used.
 
 For example:
-````
+
+```javascript
 var mixins = style.create({
   disableSelection: {
     userSelect: 'none'
@@ -166,13 +169,16 @@ var theme = style.create({
     font-weight: 'bold'
   }
 });
-````
+```
+
 `style.mixin(theme.button)` generates:
-````
+
+```css
 {
    className: 'disableSelection button'
 }
-````
+```
+
 ## Style Precedence
 
 The order of classes in the generated CSS will match the
@@ -198,7 +204,6 @@ class names.
 `compile()` takes an object returned by `create()`
 and generates the corresponding CSS classes.
 
-
 `mixin<P>(styles: Style | Style[], props?: P): P`
 
 mixin() takes a list of styles from an object created by
@@ -220,19 +225,19 @@ this results in inline styling on the DOM element.
 
 For example:
 
-````
+```javascript
 var styles = style.create({
 	styleA: { color: 'green' },
 	styleB: { color: 'blue' }
 });
 styles.mixin([styleB, styleA]);
-````
+```
 
 Will generate:
 
-````
+```css
 { className: 'styleB styleA', style: { color: 'green' } }
-````
+```
 
 ## Utility APIs
 
