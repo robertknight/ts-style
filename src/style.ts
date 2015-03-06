@@ -83,16 +83,16 @@ function isSpecialProp(key: string) {
 	return key === 'key' || key === 'parent' || key === 'mixins';
 }
 
-function addKeys(tree: any) {
+function addKeys(tree: any, prefix: string) {
 	Object.keys(tree).forEach((k) => {
 		var prop = tree[k];
 		if (typeof prop === 'object' &&
 		    prop !== tree &&
 			prop.key === undefined &&
 			prop.parent === undefined) {
-			addKeys(prop);
+			addKeys(prop, prefix);
 
-			prop.key = k;
+			prop.key = prefix + hyphenate(k);
 			prop.parent = tree;
 		}
 	});
@@ -110,12 +110,12 @@ function addKeys(tree: any) {
   *       backgroundColor: 'white',
   *       width: 100
   *     }
-  *   });
+  *   }, 'my-app');
   *   style.compile(styles);
   *
   * Generates:
   *
-  *  .classA {
+  *  .my-app-class-a {
   *    background-color: 'white';
   *    width: 100px;
   *  }
@@ -124,9 +124,38 @@ function addKeys(tree: any) {
   * registry, which allows generation of the CSS for all
   * styles defined by modules loaded via a particular entry
   * point.
+  *
+  * @param namespace An optional namespace which is
+  *                  added as a prefix in front of all generated
+  *                  class names. If the namespace is a filename or path
+  *                  then the basename will be extracted and hyphenated,
+  *                  eg. '/myapp/myComponent.js' -> 'my-component'.
+  *
+  *                  A convention is to pass __filename as the namespace
+  *                  argument, to make it easy to find where a generated
+  *                  class was defined.
   */
-export function create<T>(tree: T) : T {
-	addKeys(tree);
+export function create<T>(tree: T, namespace?: string) : T {
+	if (typeof namespace === 'string') {
+		// if the namespace if a filename or path, extract the basename
+		// and hyphenate it
+		if (namespace.indexOf('.') !== -1 || namespace.indexOf('/') !== -1) {
+			var basenameRegEx = /([^/\.]+)\.[^\.]+$/;
+			var basenameMatch = namespace.match(basenameRegEx);
+			if (basenameMatch) {
+				var basename = basenameMatch[1];
+				namespace = hyphenate(basename.replace('_', '-'));
+			}
+		}
+	} else {
+		namespace = '';
+	}
+
+	if (namespace.length > 0 && namespace[namespace.length-1] !== '-') {
+		namespace += '-';
+	}
+
+	addKeys(tree, namespace);
 
 	Object.keys(tree).forEach((k) => {
 		var style = <Style>(<any>tree)[k];
@@ -173,7 +202,7 @@ export function classes<T>(...objects: T[]) : string {
 	return classNames;
 }
 
-function cssPropName(name: string) {
+function hyphenate(name: string) {
 	// adapted from React's hyphenate.js
 	var uppercasePattern = /([A-Z])/g;
 	return name.replace(uppercasePattern, '-$1').toLowerCase();
@@ -212,7 +241,7 @@ export function compile<T>(tree: T) : string {
 		if (typeof prop == 'object') {
 			classes.push(compile(prop));
 		} else {
-			cssProps.push(cssPropName(k) + ': ' + cssPropValue(k, prop));
+			cssProps.push(hyphenate(k) + ': ' + cssPropValue(k, prop));
 		}
 	});
 

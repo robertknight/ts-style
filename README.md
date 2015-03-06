@@ -1,7 +1,7 @@
 # ts-style
 [![Build Status](https://travis-ci.org/robertknight/ts-style.png?branch=master)](https://travis-ci.org/robertknight/ts-style)
 
-ts-style is a minimalist library for
+ts-style is a library for
 defining CSS styles using JavaScript or TypeScript,
 primarily intended for use with front-end libraries like React where components
 are defined in JavaScript. It has no dependencies on a specific
@@ -89,8 +89,29 @@ var Button = React.createClass({
 
 ## Additional Features
 
-
 ### Namespaces
+
+`style.create()` has an optional second argument which specifies a namespace
+for generated CSS classes. If specified, it will be added as a prefix for generated
+class names. If the namespace is a filename or path, the basename will be extracted and hyphenated.
+
+````
+// my_component.js
+var theme = style.create({
+  element: {
+    backgroundColor: 'red'
+  }
+}, __filename);
+````
+
+Generates:
+````
+.my-component-element {
+  background-color: 'red';
+}
+````
+
+### Nested styles
 
 The tree passed to `style.create()` can contain nested objects and parent
 property names are used in the generated class names:
@@ -175,7 +196,7 @@ var theme = style.create({
 
 ```css
 {
-   className: 'disableSelection button'
+   className: 'disable-selection button'
 }
 ```
 
@@ -236,7 +257,7 @@ styles.mixin([styleB, styleA]);
 Will generate:
 
 ```css
-{ className: 'styleB styleA', style: { color: 'green' } }
+{ className: 'style-b style-a', style: { color: 'green' } }
 ```
 
 ## Utility APIs

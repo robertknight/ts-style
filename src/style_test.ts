@@ -25,7 +25,7 @@ var styles = style.create({
 			color: 'green'
 		}
 	}
-});
+}, '');
 
 describe('style.create()', () => {
 	it('should register styles', () => {
@@ -40,6 +40,18 @@ describe('style.create()', () => {
 		assert.equal(Object.keys(style.registry.styles()).length, length+1);
 		assert.equal(style.registry.styles()['a'], newStyle.a);
 	});
+	it('should add namespace as a prefix', () => {
+		var namespacedStyle = style.create({
+			component: {}
+		}, 'namespace');
+		assert.equal(style.classes(namespacedStyle.component), 'namespace-component');
+	});
+	it('should hyphenate filename namespaces', () => {
+		var moduleStyle = style.create({
+			component: {}
+		}, __filename);
+		assert.equal(style.classes(moduleStyle.component), 'style-test-component');
+	});
 });
 
 describe('style.classes()', () => {
@@ -53,7 +65,7 @@ describe('style.classes()', () => {
 
 	it('should not add hyphens to property names not starting with a lower-case letter', () => {
 		assert.equal(style.classes(styles.buttonB['::pseudo-selector']),
-		  'buttonB::pseudo-selector');
+		  'button-b::pseudo-selector');
 	});
 
 	it('should add spaces between class names', () => {
@@ -71,7 +83,7 @@ describe('style.compile()', () => {
 
 	it('should not add hyphens to nested pseudo-selectors', () => {
 		assert.equal(stripSpaces(style.compile(styles.buttonB)),
-		             stripSpaces('.buttonB::pseudo-selector { color: green; }'));
+		             stripSpaces('.button-b::pseudo-selector { color: green; }'));
 	});
 
 	it('should suffix numeric values with px', () => {
@@ -95,7 +107,7 @@ describe('style.mixin()', () => {
 
 	it('should add className property for style array', () => {
 		assert.deepEqual(style.mixin([styles.button, styles.buttonB], {label: 'Foo'}),
-		                 {className: 'button buttonB', label: 'Foo'});
+		                 {className: 'button button-b', label: 'Foo'});
 	});
 
 	it('should use inline styles to resolve conflicts', () => {
@@ -110,7 +122,7 @@ describe('style.mixin()', () => {
 			}
 		});
 		assert.deepEqual(style.mixin([styles.styleB, styles.styleA]),
-		                 {className: 'styleB styleA', style: {color: 'green'}});
+		                 {className: 'style-b style-a', style: {color: 'green'}});
 	});
 
 	it('should use inline styles for plain objects', () => {
@@ -128,7 +140,7 @@ describe('style.mixin()', () => {
 			styleB: {}
 		});
 		assert.deepEqual(style.mixin([styles.styleA, null, styles.styleB]),
-		                 {className: 'styleA styleB'});
+		                 {className: 'style-a style-b'});
 	});
 });
 
@@ -165,7 +177,7 @@ describe('Style.mixins', () => {
 		             stripSpaces('.merged { color: green; }'));
 
 		assert.deepEqual(style.mixin(styles.merged), {
-			className: 'mixinA merged'
+			className: 'mixin-a merged'
 		});
 	});
 
@@ -181,7 +193,7 @@ describe('Style.mixins', () => {
 			}
 		});
 		assert.deepEqual(style.mixin(styles.merged), {
-			className: 'mixinA mixinB merged',
+			className: 'mixin-a mixin-b merged',
 			style: {
 				fontSize: 13,
 				fontWeight: 'normal'
