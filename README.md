@@ -56,7 +56,7 @@ var theme = style.create({
 The CSS can then be generated using the __ts-style__ command-line tool or the API.  `ts-style theme.js` OR `style.compile(theme)` will generate this CSS:
 
 ```css
-button {
+.button {
   background-color: green;
   width: 100px;
   border-radius: 3px;
