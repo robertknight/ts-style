@@ -90,7 +90,7 @@ function addKeys(tree: any, prefix: string) {
 		    prop !== tree &&
 			prop.key === undefined &&
 			prop.parent === undefined) {
-			addKeys(prop, prefix);
+			addKeys(prop, '');
 
 			prop.key = prefix + hyphenate(k);
 			prop.parent = tree;

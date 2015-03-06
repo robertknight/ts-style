@@ -1,6 +1,6 @@
 {
   "name": "ts-style",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Library for defining CSS classes with JavaScript or TypeScript",
   "repository": {
     "type": "git",

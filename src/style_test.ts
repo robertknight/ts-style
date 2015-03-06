@@ -52,6 +52,14 @@ describe('style.create()', () => {
 		}, __filename);
 		assert.equal(style.classes(moduleStyle.component), 'style-test-component');
 	});
+	it('should only add namespace to top-level styles', () => {
+		var namespacedStyle = style.create({
+			root: {
+				child: {}
+			}
+		}, 'namespace');
+		assert.equal(style.classes(namespacedStyle.root.child), 'namespace-root-child');
+	});
 });
 
 describe('style.classes()', () => {
