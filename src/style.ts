@@ -54,12 +54,7 @@ export interface Style {
 /** A style registry holds a collection of named
   * styles created by calls to create()
   */
-export interface StyleRegistry {
-	styles() : {[name: string] : Style} 
-	add(style: Style) : void;
-}
-
-class StyleRegistryImpl implements StyleRegistry {
+export class Registry {
 	private styleMap: {[name: string]: Style};
 
 	constructor() {
@@ -73,11 +68,20 @@ class StyleRegistryImpl implements StyleRegistry {
 	styles() {
 		return this.styleMap;
 	}
+
+	/** Returns CSS markup for all of the styles
+	  * in the registry
+	  */
+	generateCSS() {
+		return Object.keys(this.styleMap).map((key) => {
+			return compile(this.styleMap[key]);
+		}).join('\n\n');
+	}
 }
 
 /** A global registry of all styles defined via style.create()
   */
-export var registry: StyleRegistry = new StyleRegistryImpl();
+export var registry = new Registry();
 
 function isSpecialProp(key: string) {
 	return key === 'key' || key === 'parent' || key === 'mixins';
@@ -135,7 +139,7 @@ function addKeys(tree: any, prefix: string) {
   *                  argument, to make it easy to find where a generated
   *                  class was defined.
   */
-export function create<T>(tree: T, namespace?: string) : T {
+export function create<T>(tree: T, namespace?: string, localRegistry: Registry = registry) : T {
 	if (typeof namespace === 'string') {
 		// if the namespace if a filename or path, extract the basename
 		// and hyphenate it
@@ -160,7 +164,7 @@ export function create<T>(tree: T, namespace?: string) : T {
 	Object.keys(tree).forEach((k) => {
 		var style = <Style>(<any>tree)[k];
 		if (style.key) {
-			registry.add(style);
+			localRegistry.add(style);
 		}
 	});
 

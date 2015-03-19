@@ -209,3 +209,36 @@ describe('Style.mixins', () => {
 		});
 	});
 });
+
+describe('Style.registry.generateCSS()', () => {
+	it('should generate markup for all defined styles', () => {
+		var registry = new style.Registry();
+
+		style.create({
+			styleA: {
+				color: 'green',
+				fontWeight: 'bold'
+			}
+		}, 'group-a', registry);
+
+		style.create({
+			styleB: {
+				color: 'blue',
+				fontSize: 15
+			}
+		}, 'group-b', registry);
+
+		var markup = registry.generateCSS();
+		assert.equal(stripSpaces(markup), stripSpaces(`
+			.group-a-style-a {
+				color: green;
+				font-weight: bold;
+			}
+
+			.group-b-style-b {
+				color: blue;
+				font-size: 15px;
+			}
+		`));
+	});
+});
