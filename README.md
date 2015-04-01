@@ -11,8 +11,7 @@ For background on why you might want to do such a thing, see
 [@vjeux](https://twitter.com/vjeux)'s talk on [CSS in JS](https://speakerdeck.com/vjeux/react-css-in-js),
 or [this post on AbsurdJS](http://davidwalsh.name/write-css-javascript).
 
-See also [React Style](https://github.com/js-next/react-style) for a library
-specifically for defining styles for React components in JavaScript.
+**There are a number of other libraries fulfilling similar use cases. See [this issue](https://github.com/VirtualCSS/planning/issues/2) for a list and [this issue](https://github.com/VirtualCSS/planning/issues/1) for discussions around unifying them.**
 
 ## Rationale
 
