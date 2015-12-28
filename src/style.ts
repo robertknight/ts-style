@@ -346,7 +346,7 @@ export function mixin<P>(styles: Object | Object[], props?: P) : P {
 	styles = flattenMixins(styles);
 
 	if (styles instanceof Array) {
-		var styleProps = combine(styles);
+		var styleProps = combine(styles as Style[]);
 		if (styleProps.className) {
 			(<StyleProps>props).className = styleProps.className;
 		}
